@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 //first we define the macro preprocessor for the copiler to know what to substitute with what
 #define CGROUP_ROOT "/sys/fs/cgroup"
 #define CGROUP_PARENT "c-cgroup"
@@ -53,14 +54,14 @@ void create_cgroup(pid_t pid){
         printf("the parent has been created \n");
     }
     else{
-        printf("parent failed \n");
+        perror("parent failed \n");
         return;
     }
     if(mkdir(path ,0777) == 0){
         printf("Directory created sucessfully \n");
     }
     else {
-        printf("directory could not be created \n");
+        perror("directory could not be created \n");
         return;
     }
     return;
