@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <errno.h>
+#include <errno.h>//this is only for showing the error that is caused when a syscall fails , use it only for syscalls
 //first we define the macro preprocessor for the copiler to know what to substitute with what
 #define CGROUP_ROOT "/sys/fs/cgroup"
 #define CGROUP_PARENT "c-cgroup"
@@ -50,13 +50,10 @@ void create_cgroup(pid_t pid){
     char path_parent[256];
     snprintf(path, sizeof(path),"%s/%s/%d",CGROUP_ROOT,CGROUP_PARENT,pid);
     snprintf(path_parent, sizeof(path_parent),"%s/%s",CGROUP_ROOT,CGROUP_PARENT);
-    if(mkdir(path_parent, 0777)==0){
-        printf("the parent has been created \n");
-    }
-    else{
-        perror("parent failed \n");
-        return;
-    }
+    struct stat st ;
+   if (stat(path_parent,&st)==-1){
+       mkdir(path_parent,0755);
+   }
     if(mkdir(path ,0777) == 0){
         printf("Directory created sucessfully \n");
     }
