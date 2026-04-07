@@ -30,6 +30,19 @@ void write_to_file(const char *path , const char *value ){
 
         return ;
 }
+//this is a helper function that is gonna find the cgorup of the pid and then is gonna write the values to that cgroup
+// this is gonna set a limit to the resources that are at the folder /sys/fs/cgroup/pid
+void setLimit(pid_t pid , const char *memory , const char *cpu){
+    char memory_path [250];
+    char cpu_path [250];
+    snprintf(memory_path,sizeof(memory_path),"%s/%s/%d/%s",CGROUP_ROOT,CGROUP_PARENT,pid,"memory.max");
+    snprintf(cpu_path,sizeof(cpu_path),"%s/%s/%d/%s",CGROUP_ROOT,CGROUP_PARENT,pid,"cpu.max");
+    write_to_file(memory_path,memory);
+    write_to_file(cpu_path, cpu);
+    return ;
+
+}
+//just simple concatination and then doing mkdir that is it
 
 void create_cgroup(pid_t pid){
     char path[256];
@@ -52,7 +65,30 @@ void create_cgroup(pid_t pid){
     }
     return;
 }
-int main(){
+int main(int argc,char *argv[]){
+    char memory[250] ;
+    char cpu[250];
+    if (argc<3){
+        printf(
+            "wrong format , \n either an executable or an program expected ..\n Example : ./cgcontrol run python3 script.py"
+
+        );
+        return 0;
+    }
+    for (int i =0 ; i<argc;i++){
+    if (strcmp(argv[i], "--memory") == 0) {
+        // next argument is the value
+        strcpy(memory,argv[i+1]);
+    }
+    }
+    for (int j =0 ; j<argc;j++){
+    if (strcmp(argv[j], "--cpu") == 0) {
+        // next argument is the value
+        strcpy(cpu ,argv[j+1]);
+    }
+    }
+    int pid=fork();
+    create_cgroup(pid);
 
 return 0 ;
 }
